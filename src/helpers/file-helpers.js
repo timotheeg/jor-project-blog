@@ -1,7 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
-import React from 'react';
 
 export async function getBlogPostList() {
   const fileNames = await readDirectory('/content');
@@ -26,7 +25,7 @@ export async function getBlogPostList() {
   );
 }
 
-export const loadBlogPost = React.cache(async function (slug) {
+export const loadBlogPost = async function (slug) {
   console.log(`loadBlogPost ${slug}`);
   const rawContent = await readFile(
     `/content/${slug}.mdx`
@@ -36,7 +35,7 @@ export const loadBlogPost = React.cache(async function (slug) {
     matter(rawContent);
 
   return { frontmatter, content };
-});
+};
 
 function readFile(localPath) {
   return fs.readFile(
