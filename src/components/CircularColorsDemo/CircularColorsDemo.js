@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import clsx from 'clsx';
 import {
@@ -5,7 +6,7 @@ import {
   Pause,
   RotateCcw,
 } from 'react-feather';
-
+import { motion, MotionConfig } from 'framer-motion';
 import Card from '@/components/Card';
 import VisuallyHidden from '@/components/VisuallyHidden';
 
@@ -18,15 +19,31 @@ const COLORS = [
 ];
 
 function CircularColorsDemo() {
-  // TODO: This value should increase by 1 every second:
-  const timeElapsed = 0;
+  const id = React.useId();
+  const [counting, setCounting] = React.useState(false);
+  const [timeElapsed, setTimeElapsed] = React.useState(0);
 
-  // TODO: This value should cycle through the colors in the
-  // COLORS array:
-  const selectedColor = COLORS[0];
+  React.useEffect(() => {
+    if (!counting) return;
+
+    const intervalId = window.setInterval(() => {
+      setTimeElapsed(val => val + 1);
+    }, 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    }
+  }, [counting]);
+
+  function resetTimeElapsed() {
+    setTimeElapsed(0);
+  }
+
+  const selectedColor = COLORS[timeElapsed % COLORS.length];
 
   return (
     <Card as="section" className={styles.wrapper}>
+      <MotionConfig reducedMotion="user">
       <ul className={styles.colorsWrapper}>
         {COLORS.map((color, index) => {
           const isSelected =
@@ -38,7 +55,8 @@ function CircularColorsDemo() {
               key={index}
             >
               {isSelected && (
-                <div
+                <motion.div
+                  layoutId={`${id}-col-outline`}
                   className={
                     styles.selectedColorOutline
                   }
@@ -69,16 +87,17 @@ function CircularColorsDemo() {
           <dd>{timeElapsed}</dd>
         </dl>
         <div className={styles.actions}>
-          <button>
-            <Play />
+          <button onClick={() => setCounting(!counting)}>
+            {counting ? <Pause /> : <Play />}
             <VisuallyHidden>Play</VisuallyHidden>
           </button>
-          <button>
+          <button onClick={resetTimeElapsed}>
             <RotateCcw />
             <VisuallyHidden>Reset</VisuallyHidden>
           </button>
         </div>
       </div>
+      </MotionConfig>
     </Card>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import clsx from 'clsx';
+import { motion, LayoutGroup, MotionConfig } from 'framer-motion';
 
 import { range } from '@/utils';
 import Card from '@/components/Card';
@@ -9,11 +10,13 @@ import SliderControl from '@/components/SliderControl';
 import Equation from './Equation';
 import styles from './DivisionGroupsDemo.module.css';
 
+
 function DivisionGroupsDemo({
   numOfItems = 12,
   initialNumOfGroups = 1,
   includeRemainderArea,
 }) {
+  const id = React.useId();
   const [numOfGroups, setNumOfGroups] = React.useState(
     initialNumOfGroups
   );
@@ -39,7 +42,9 @@ function DivisionGroupsDemo({
         };
 
   return (
+    <MotionConfig reducedMotion="user">
     <Card as="section" className={styles.wrapper}>
+    <LayoutGroup>
       <header className={styles.header}>
         <SliderControl
           label="Number of Groups"
@@ -62,9 +67,12 @@ function DivisionGroupsDemo({
           {range(numOfGroups).map((groupIndex) => (
             <div key={groupIndex} className={styles.group}>
               {range(numOfItemsPerGroup).map((index) => {
+                const ballId = groupIndex * numOfItemsPerGroup + index;
+                const layoutId = `${id}-${ballId}`;
                 return (
-                  <div
-                    key={index}
+                  <motion.div
+                    layoutId={layoutId}
+                    key={layoutId}
                     className={styles.item}
                   />
                 );
@@ -81,8 +89,12 @@ function DivisionGroupsDemo({
           </p>
 
           {range(remainder).map((index) => {
+            const reversedIndex = remainder - index - 1;
+            const ballId = numOfGroups * numOfItemsPerGroup + reversedIndex;
+            const layoutId = `${id}-${ballId}`;
+            
             return (
-              <div key={index} className={styles.item} />
+              <motion.div layoutId={layoutId} key={layoutId} className={styles.item} />
             );
           })}
         </div>
@@ -93,8 +105,12 @@ function DivisionGroupsDemo({
         divisor={numOfGroups}
         remainder={remainder}
       />
+      </LayoutGroup>
     </Card>
+    </MotionConfig>
   );
 }
 
-export default DivisionGroupsDemo;
+
+
+export default DivisionGroupsDemo
